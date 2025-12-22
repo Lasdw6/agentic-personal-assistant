@@ -17,7 +17,7 @@ This is a **public documentation repository**.
 
 ---
 
-## í·  Overview
+## ðŸ§  Overview
 
 The Agentic Personal Assistant is a long-running AI system designed to operate over real personal data (documents, email, calendar) with:
 
@@ -37,7 +37,7 @@ This repository focuses on **system design**, not implementation details.
 
 ---
 
-## í¿—ï¸ High-Level Architecture
+## ðŸ—ï¸ High-Level Architecture
 
 > **Diagram placeholder:** `diagrams/high-level-architecture.png`
 
@@ -87,7 +87,7 @@ The system prioritizes **predictability and debuggability** over maximal autonom
 
 ---
 
-## í·© Memory Model
+## ðŸ§© Memory Model
 
 > **Diagram placeholder:** `diagrams/memory-lifecycle.png`
 
@@ -114,7 +114,7 @@ Key principles:
 
 ---
 
-## í´Ž Retrieval-Augmented Generation (RAG)
+## ðŸ”Ž Retrieval-Augmented Generation (RAG)
 
 The system uses a retrieval pipeline to query personal documents and structured data.
 
@@ -127,7 +127,7 @@ RAG is treated as a **retrieval system**, not just a prompt enhancement.
 
 ---
 
-## í³Š Observability & Debugging
+## ðŸ“Š Observability & Debugging
 
 The system is instrumented to support live operation and iteration:
 
@@ -157,7 +157,7 @@ These choices are intentional.
 
 ---
 
-## íº€ Deployment & Operation
+## ðŸš€ Deployment & Operation
 
 - Operated as a long-running, containerized backend service
 - Schema changes and memory resets handled explicitly
@@ -167,7 +167,7 @@ This system is maintained as something that must **keep working**, not a one-off
 
 ---
 
-## í¾¥ Demo
+## ðŸŽ¥ Demo
 
 > **Demo video placeholder:** (link coming soon)
 
@@ -185,12 +185,11 @@ If youâ€™re interested in a walkthrough before the video is available, feel free
 
 ---
 
-## í´§ Status
+## ðŸ”§ Status
 
 This is an actively evolving personal system.
 Current focus areas:
 - Improving retrieval quality
 - Tightening execution guardrails
 - Making failures easier to reason about
-
 
