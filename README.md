@@ -1,0 +1,196 @@
+# Agentic Personal Assistant
+
+## TL;DR
+A **stateful, backend-first AI assistant system** that I actively use for personal workflows.  
+This repo documents the **architecture, execution model, memory design, and failure modes** of the system.  
+The implementation code is kept private due to live usage over personal data â€” diagrams and explanations are public.
+
+---
+
+## âš ï¸ Disclaimer (Read First)
+
+This is a **public documentation repository**.
+
+- The **implementation code is private**, as the system runs against personal data and live integrations.
+- This repo exists to document **design decisions, tradeoffs, and system architecture**.
+- If youâ€™re interested in a **walkthrough or live demo**, feel free to reach out.
+
+---
+
+## í·  Overview
+
+The Agentic Personal Assistant is a long-running AI system designed to operate over real personal data (documents, email, calendar) with:
+
+- Explicit memory management
+- Guarded agent execution
+- Production-aware observability
+
+This is **not** a chat demo or tutorial project.
+
+The goal is to explore what it takes to build an assistant that:
+- Maintains state across interactions
+- Retrieves and reasons over user-owned data
+- Exposes failure modes instead of hiding them
+- Can be operated, debugged, and evolved over time
+
+This repository focuses on **system design**, not implementation details.
+
+---
+
+## í¿—ï¸ High-Level Architecture
+
+> **Diagram placeholder:** `diagrams/high-level-architecture.png`
+
+<!--
+INSERT IMAGE HERE
+-->
+
+At a high level, the system is structured as a backend service with clear separation between:
+
+- API layer (request validation and orchestration)
+- Agent execution runtime
+- Memory systems (short-term vs long-term)
+- External integrations (email, calendar, vector store)
+
+Design goals:
+- Make agent execution observable and debuggable
+- Avoid hidden state and uncontrolled autonomy
+- Treat memory as a first-class system concern
+
+---
+
+## âš™ï¸ Agent Execution Model
+
+> **Diagram placeholder:** `diagrams/agent-execution-flow.png`
+
+<!--
+INSERT IMAGE HERE
+-->
+
+Each request flows through a constrained execution pipeline:
+
+1. **Request ingestion**
+   - Inputs are validated and normalized at the API boundary.
+
+2. **Planning**
+   - The agent determines whether retrieval or tools are required.
+   - Autonomous chaining is intentionally limited.
+
+3. **Tool execution**
+   - Tools are invoked with explicit input/output schemas.
+   - Tool outputs are validated before reuse.
+
+4. **Response synthesis**
+   - Final responses are generated using validated intermediate results only.
+
+The system prioritizes **predictability and debuggability** over maximal autonomy.
+
+---
+
+## í·© Memory Model
+
+> **Diagram placeholder:** `diagrams/memory-lifecycle.png`
+
+<!--
+INSERT IMAGE HERE
+-->
+
+The assistant uses **explicit memory separation**:
+
+### Short-Term Memory
+- Exists only for the duration of a request or task
+- Stores intermediate reasoning and tool outputs
+- Never persisted
+
+### Long-Term Memory
+- Stores durable information (documents, user-provided context)
+- Backed by a vector store for retrieval
+- Write access is intentionally constrained
+
+Key principles:
+- Not everything should be remembered
+- Memory writes are explicit, not automatic
+- Retrieval quality matters more than recall volume
+
+---
+
+## í´Ž Retrieval-Augmented Generation (RAG)
+
+The system uses a retrieval pipeline to query personal documents and structured data.
+
+Characteristics:
+- Explicit chunking and embedding strategy
+- Retrieval scoped to task-relevant context
+- Iterated on after observing hallucinations and irrelevant context under real usage
+
+RAG is treated as a **retrieval system**, not just a prompt enhancement.
+
+---
+
+## í³Š Observability & Debugging
+
+The system is instrumented to support live operation and iteration:
+
+- Structured logs for agent decisions and tool calls
+- Execution traces for multi-step tasks
+- Latency metrics to identify bottlenecks
+- Visibility into failure modes instead of silent degradation
+
+Observability exists because **agent systems fail in non-obvious ways**.
+
+---
+
+## âš ï¸ Failure Modes & Tradeoffs
+
+This project explicitly documents known limitations:
+
+- Early designs overused autonomous agent chaining, leading to unpredictable behavior and difficult debugging.
+- Naive similarity-based retrieval surfaced irrelevant context for long-tail queries.
+- Stateless designs failed for multi-turn tasks and were refactored.
+
+Current tradeoffs:
+- Reduced autonomy â†’ increased reliability
+- Explicit control â†’ easier debugging
+- Simpler execution paths â†’ predictable behavior
+
+These choices are intentional.
+
+---
+
+## íº€ Deployment & Operation
+
+- Operated as a long-running, containerized backend service
+- Schema changes and memory resets handled explicitly
+- Backward-incompatible changes required migration or cleanup
+
+This system is maintained as something that must **keep working**, not a one-off experiment.
+
+---
+
+## í¾¥ Demo
+
+> **Demo video placeholder:** (link coming soon)
+
+<!--
+INSERT DEMO VIDEO LINK HERE
+-->
+
+The demo will include:
+- Live agent execution
+- Retrieval traces
+- Observability during a real task
+- Discussion of constraints and failure handling
+
+If youâ€™re interested in a walkthrough before the video is available, feel free to reach out.
+
+---
+
+## í´§ Status
+
+This is an actively evolving personal system.
+Current focus areas:
+- Improving retrieval quality
+- Tightening execution guardrails
+- Making failures easier to reason about
+
+
