@@ -1,39 +1,19 @@
 # Agentic Personal Assistant
 
-## TL;DR
-A **stateful, backend-first AI assistant system** that I actively use for personal workflows.  
-This repo documents the **architecture, execution model, memory design, and failure modes** of the system.  
-The implementation code is kept private due to live usage over personal data — diagrams and explanations are public.
-
----
-
-## ⚠️ Disclaimer (Read First)
+## ⚠️ Disclaimer
 
 This is a **public documentation repository**.
 
-- The **implementation code is private**, as the system runs against personal data and live integrations.
-- This repo exists to document **design decisions, tradeoffs, and system architecture**.
-- If you’re interested in a **walkthrough or live demo**, feel free to reach out.
+- The **implementation code is private**, as the system runs against my personal data and id rather not have it stolen.
+- This repo exists to document **design and system architecture**.
+- If you’re interested in a **walkthrough or live demo**, feel free to reach out to me.
 
 ---
 
-## 🧠 Overview
+## Overview
 
-The Agentic Personal Assistant is a long-running AI system designed to operate over real personal data (documents, email, calendar) with:
+The Agentic Personal Assistant (APRIL) is an multi agentic system I designed to use my personal data (documents, emails, calendar) to make my life easier.
 
-- Explicit memory management
-- Guarded agent execution
-- Production-aware observability
-
-This is **not** a chat demo or tutorial project.
-
-The goal is to explore what it takes to build an assistant that:
-- Maintains state across interactions
-- Retrieves and reasons over user-owned data
-- Exposes failure modes instead of hiding them
-- Can be operated, debugged, and evolved over time
-
-This repository focuses on **system design**, not implementation details.
 
 ---
 
