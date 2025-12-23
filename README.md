@@ -24,9 +24,9 @@ flowchart TB
 
     User[User / Frontend]
 
-    subgraph API [API Container - FastAPI]
+    subgraph API [API Container]
         direction LR
-        API_Endpoint[API Endpoint]
+        API_Endpoint[API Endpoint<br/>FastAPI]
         Supervisor[Supervisor]
         SSE[SSE Stream]
     end
@@ -78,25 +78,35 @@ flowchart TB
     linkStyle 3 stroke:#424242,stroke-width:2px
     linkStyle 4 stroke:#424242,stroke-width:2px
     linkStyle 5 stroke:#424242,stroke-width:2px
-    linkStyle 6 stroke:#424242,stroke-width:2px,stroke-dasharray: 5 5
+    linkStyle 6 stroke:#424242,stroke-width:2px
     linkStyle 7 stroke:#424242,stroke-width:2px,stroke-dasharray: 5 5
     linkStyle 8 stroke:#424242,stroke-width:2px,stroke-dasharray: 5 5
+    linkStyle 9 stroke:#000000,stroke-width:3px,stroke-dasharray: 5 5
 ```
 
 At a high level, the system is structured as a distributed backend service with clear separation between:
 
 - **API Container (FastAPI)**: Handles request validation, routing, and real-time status streaming via SSE
-- **Supervisor Agent**: Orchestrates task execution using Model Context Protocol (MCP) servers for Email and Calendar domains
+  - **FastAPI**: Python web framework providing REST API endpoints for query processing
+  - **SSE Stream (Server-Sent Events)**: Real-time status updates for long-running tasks via `/agent/status/{task_id}/stream` endpoint
+- **Supervisor Agent**: Orchestrates tasks using Model Context Protocol (MCP) servers
+  - **MCP (Model Context Protocol)**: Protocol-based tool access system connecting to Email and Calendar MCP servers
 - **Infrastructure (Redis)**: Task queue broker and result backend for asynchronous processing
-- **Worker Container (Celery)**: Independent worker processes that execute long-running agent tasks
-- **Specialized Agents**: Domain-specific agents (Inbox Agent, Calendar Agent, Suggestor Agent) that run within worker processes
+  - **Redis Broker**: Message queue for distributing tasks to workers
+  - **Redis Backend**: Stores task results and status information
+- **Worker Container (Celery)**: Independent worker processes for long-running tasks
+  - **Celery**: Distributed task queue system executing agent tasks asynchronously
+- **Specialized Agents**: Domain-specific agents for different capabilities
+  - **Inbox Agent**: Manages Gmail operations (read, send, search emails)
+  - **Calendar Agent**: Manages Google Calendar operations (list, create, update, delete events)
+  - **Suggestor Agent**: Classifies queries and routes to appropriate agents
 - **External APIs**: Gmail API, Google Calendar API, and OpenAI LLM services (gpt-4o-mini)
 
 Design goals:
 
-- **Independent Lifespans**: Worker processes can run independently of the API, surviving restarts
-- **Observability**: Real-time status updates via SSE streams for long-running tasks
-- **Scalability**: Multiple worker instances can process tasks in parallel
+- **Independent Lifespans**: Worker processes run independently of the API, surviving restarts
+- **Observability**: SSE streams provide real-time status updates for long-running tasks
+- **Scalability**: Multiple worker instances can process tasks in parallel from the shared Redis queue
 - **Reliability**: Task persistence in Redis ensures jobs aren't lost on failures
 
 ---
@@ -169,17 +179,18 @@ Each request flows through a constrained execution pipeline:
 
 1. **Context Retrieval**
 
-   - Memory Manager retrieves conversation history (short-term context)
-   - RAG System queries vector store for relevant documents (long-term knowledge)
+   - **Memory Manager**: Retrieves conversation history (short-term context) from MongoDB
+   - **RAG System**: Queries vector store (Pinecone) for relevant documents (long-term knowledge)
 
 2. **Supervisor Analysis & Planning**
 
    - Supervisor Agent analyzes the query with full context
-   - Determines whether additional information is needed
+   - Connects to Email and Calendar MCP servers
+   - Creates execution plan and determines if additional information is needed
 
 3. **Information Gathering (Researcher Persona)**
 
-   - If needed, Researcher Persona (read-only) gathers information via MCP servers
+   - Researcher Persona (read-only) gathers information via MCP servers
    - **Email MCP Tools**: `read_emails`, `count_emails`, `get_email_details` for searching and reading Gmail messages
    - **Calendar MCP Tools**: `list_events`, `get_day_schedule` for viewing Google Calendar availability
    - Findings are returned to Supervisor for decision-making
